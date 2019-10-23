@@ -38,6 +38,9 @@
 <script>
 import Multiselect from 'vue-multiselect';
 export default {
+  components: {
+    Multiselect
+  },
   data() {
     return {
       value: [],
@@ -111,8 +114,10 @@ export default {
       }
     };
   },
-  components: {
-    Multiselect
+  watch: {
+    items(val) {
+      this.tableOptions.totalRows = val.length;
+    }
   },
   mounted() {
     // set the initial number of items

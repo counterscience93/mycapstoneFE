@@ -27,34 +27,40 @@
 import Multiselect from 'vue-multiselect';
 import CommonUtil from '../../common/utils/common-util';
 import { AdvisorService } from '../../services/service-provider';
+
 export default {
-    mounted(){
-            this.getAdvisor();
-    },
   components: {
     multiselect: Multiselect
   },
+  mounted() {
+    this.getAdvisor();
+  },
+  watch: {
+    items(val) {
+      this.tableOptions.totalRows = val.length;
+    }
+  },
   data() {
     return {
-    advisorData: undefined,
+      advisorData: undefined,
       optionsData: {},
       formData: {}
     };
   },
   getAdvisor() {
-      CommonUtil.addLoading();
-      AdvisorService.getAdvisor(
-        result => {
-          let tmp = CommonUtil.convertToSelectBoxData(result, 'fullName');
-          tmp = tmp.filter(item => item.value !== 1);
-          this.optionsData.subAdvisors = tmp;
-          this.advisorData = result;
-          CommonUtil.removeLoading();
-        },
-        () => {
-          CommonUtil.removeLoading();
-        }
-      );
-    }
+    CommonUtil.addLoading();
+    AdvisorService.getAdvisor(
+      result => {
+        let tmp = CommonUtil.convertToSelectBoxData(result, 'fullName');
+        tmp = tmp.filter(item => item.value !== 1);
+        this.optionsData.subAdvisors = tmp;
+        this.advisorData = result;
+        CommonUtil.removeLoading();
+      },
+      () => {
+        CommonUtil.removeLoading();
+      }
+    );
+  }
 };
 </script>

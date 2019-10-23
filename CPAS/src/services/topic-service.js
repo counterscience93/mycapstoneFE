@@ -82,14 +82,6 @@ export default {
       errorCallback
     );
   },
-  // Department head get approved topic
-  dhGetApprovedTopic(callback, errorCallback) {
-    CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.topic.DH_GET_TOPIC),
-      callback,
-      errorCallback
-    );
-  },
   // get topic by status
   getTopicByStatus(callback, errorCallback) {
     CommonUtil.requestAxios(
@@ -98,6 +90,7 @@ export default {
       errorCallback
     );
   },
+  // change status of ts
   postChangeStatus(data, callback, errorCallback) {
     CommonUtil.requestAxios(
       baseServerAxios.post(

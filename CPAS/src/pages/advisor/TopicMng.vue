@@ -54,6 +54,14 @@
                 >
                 <b-badge
                   pill
+                  v-if="row.item.status === 3"
+                  variant="danger"
+                  class="status-item"
+                >
+                  Duplicate Rejected</b-badge
+                >
+                <b-badge
+                  pill
                   v-if="row.item.status === 4"
                   variant="success"
                   class="status-item"
@@ -62,11 +70,19 @@
                 >
                 <b-badge
                   pill
-                  v-if="row.item.status === 3"
+                  v-if="row.item.status === 5"
                   variant="danger"
                   class="status-item"
                 >
-                  Duplicate Reject</b-badge
+                  Validate Rejected</b-badge
+                >
+                <b-badge
+                  pill
+                  v-if="row.item.status === 6"
+                  variant="success"
+                  class="status-item"
+                >
+                  Validate Approved</b-badge
                 >
                 <b-badge
                   pill
@@ -78,19 +94,51 @@
                 >
                 <b-badge
                   pill
-                  v-if="row.item.status === 'Taken'"
-                  variant="primary"
-                  class="status-item"
-                >
-                  {{ row.item.status }}</b-badge
-                >
-                <b-badge
-                  pill
-                  v-if="row.item.status === 'Passed'"
+                  v-if="row.item.status === 8"
                   variant="info"
                   class="status-item"
                 >
-                  {{ row.item.status }}</b-badge
+                  Public</b-badge
+                >
+                <b-badge
+                  pill
+                  v-if="row.item.status === 9"
+                  variant="info"
+                  class="status-item"
+                >
+                  Taken</b-badge
+                >
+                <b-badge
+                  pill
+                  v-if="row.item.status === 10"
+                  variant="success"
+                  class="status-item"
+                >
+                  Pass</b-badge
+                >
+                <b-badge
+                  pill
+                  v-if="row.item.status === 11"
+                  variant="danger"
+                  class="status-item"
+                >
+                  Fail</b-badge
+                >
+                <b-badge
+                  pill
+                  v-if="row.item.status === 12"
+                  variant="warning"
+                  class="status-item"
+                >
+                  Validate Pending</b-badge
+                >
+                <b-badge
+                  pill
+                  v-if="row.item.status === 13"
+                  variant="warning"
+                  class="status-item"
+                >
+                  Publish Pending</b-badge
                 >
               </template>
               <!-- action column -->
@@ -103,9 +151,7 @@
                   <b-button variant="info" size="sm">Manage</b-button>
                 </template>
                 <template
-                  v-else-if="
-                    row.item.status === 1 || row.item.status === 'Rejected'
-                  "
+                  v-else-if="row.item.status === 1 || row.item.status === 3"
                 >
                   <b-button
                     variant="primary"
@@ -124,6 +170,15 @@
                     <font-awesome-icon icon="info" />
                   </b-button>
                 </template>
+                <template v-if="row.item.status === 3">
+                  <b-button
+                    variant="info"
+                    size="sm"
+                    @click="showNoteModal(row.item.note)"
+                  >
+                    <font-awesome-icon icon="sticky-note" />
+                  </b-button>
+                </template>
               </template>
             </b-table>
             <b-pagination
@@ -136,6 +191,7 @@
         </div>
       </div>
     </b-col>
+    <note-modal ref="note-modal" />
   </b-row>
 </template>
 
@@ -144,9 +200,13 @@ import moment from 'moment';
 import UrlConstant from '../../common/constant/common-url';
 import CommonConstant from '../../common/constant/common-constant';
 import CommonUtil from '../../common/utils/common-util';
+import NoteModal from './components/NoteModal';
 import { TopicService } from '../../services/service-provider';
 
 export default {
+  components: {
+    NoteModal
+  },
   data() {
     return {
       fields: [
@@ -175,6 +235,11 @@ export default {
       }
     };
   },
+  watch: {
+    items(val) {
+      this.tableOptions.totalRows = val.length;
+    }
+  },
   mounted() {
     // Set the initial number of items
     this.tableOptions.totalRows = this.items.length;
@@ -182,6 +247,10 @@ export default {
     this.getTopicData();
   },
   methods: {
+    // Show note modal
+    showNoteModal(data) {
+      this.$refs['note-modal'].init(data);
+    },
     // Trigger pagination to update the number of buttons/pages due to filtering
     onFiltered(filteredItems) {
       this.tableOptions.totalRows = filteredItems.length;
@@ -209,6 +278,7 @@ export default {
             result.forEach(item => {
               this.items.push({
                 id: item.id,
+                note: item.note,
                 nameEng: item.name_En,
                 nameVi: item.name_Vi,
                 created_date: moment(item.createdDate).format(

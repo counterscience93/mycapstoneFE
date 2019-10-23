@@ -80,6 +80,11 @@ export default {
       }
     };
   },
+  watch: {
+    items(val) {
+      this.tableOptions.totalRows = val.length;
+    }
+  },
   mounted() {
     // set the initial number of items
     this.tableOptions.totalRows = this.items.length;

@@ -8,22 +8,18 @@
           </div>
           <div class="d-inline-block pl-2">
             <div class="page-title-description-header">Manage Topic</div>
-            <div class="page-title-description-detail">Department Head can approve or reject a topic</div>
+            <div class="page-title-description-detail">
+              Department Head can approve or reject a topic
+            </div>
           </div>
         </div>
       </b-col>
     </b-row>
-    <div
-      v-if="isLoading"
-      class="d-flex justify-content-center align-items-center"
-      style="height: 60vh;"
-    >
-      <b-spinner style="width: 5rem; height: 5rem;" label="Large Spinner" class="spinner"></b-spinner>
-    </div>
-    <div v-else>
-      <b-row class="m-0">
-        <b-col cols="12" class="mt-2 p-3">
-          <div class="card card-shadow">
+    <b-row class="m-0">
+      <b-col cols="12" class="mt-2 p-3">
+        <div class="card card-shadow">
+          <div class="card-header custom">Manage Topic Table</div>
+          <div class="card-body">
             <b-table
               hover
               :items="topics"
@@ -31,71 +27,31 @@
               :current-page="tableOptions.currentPage"
               :per-page="tableOptions.perPage"
               @filtered="onFiltered"
-              class="text-center"
+              class="text-align-left"
             >
               <!-- customize column -->
-              <!-- <template v-slot:cell(advisor)="row">{{ row.value.fullName }}</template> -->
-              <template v-slot:cell(duplicate)="row">
-                <!-- <b-button size="sm" @click="row.toggleDetails" class="mr-2">
-          {{ row.detailsShowing ? 'Hide' : 'Show' }} Topics duplicated
-                </b-button>-->
-
-                <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-                <b-form-checkbox
-                  v-model="row.detailsShowing"
-                  @change="row.toggleDetails"
-                  checked
-                >Topics might same</b-form-checkbox>
-              </template>
 
               <template v-slot:cell(option)="row">
-                <b-button-group>
-                  <b-button
-                    size="sm"
-                    variant="outline-primary"
-                    @click="redirectToViewDetailPage(row.item.id)"
-                  >Detail</b-button>
-                  <b-button size="sm" variant="outline-success">Approve</b-button>
-                  <b-button size="sm" variant="outline-danger">Reject</b-button>
-                </b-button-group>
-              </template>
-
-              <template v-slot:row-details="row">
-                <b-card title="Topics might be duplicated">
-                  <b-row class="mb-2" v-for="dup in row.item.duplicatedTopics" v-bind:key="dup.id">
-                    <b-col sm="5" class="text-sm-left">
-                      <b>Capstone:</b>
-                      {{ dup.name_En }}
-                    </b-col>
-                    <b-col sm="3" class="text-sm-left">
-                      <b>Advisor:</b>
-                      {{ dup.advisorName }}
-                    </b-col>
-                    <b-col sm="3" class="text-sm-left">
-                      <b>Created:</b>
-                      {{formatTime(dup.createdDate)}}
-                    </b-col>
-                    <b-col sm="1" class="text-sm-center">
-                      <b-button
-                        size="sm"
-                        variant="outline-primary"
-                        @click="redirectToViewDetailPage(dup.id)"
-                      >Detail</b-button>
-                    </b-col>
-                  </b-row>
-                </b-card>
+                <b-button
+                  size="sm"
+                  variant="outline-primary"
+                  @click="redirectToViewDetailPage(row.item.id)"
+                  >Detail</b-button
+                >
               </template>
             </b-table>
+            <b-pagination
+              v-model="tableOptions.currentPage"
+              :total-rows="tableOptions.totalRows"
+              :per-page="tableOptions.perPage"
+              size="sm"
+            />
           </div>
-          <b-pagination
-            v-model="tableOptions.currentPage"
-            :total-rows="tableOptions.totalRows"
-            :per-page="tableOptions.perPage"
-            size="sm"
-          ></b-pagination>
-        </b-col>
-      </b-row>
-    </div>
+        </div>
+        <b-btn size="sm" @click="addChanelFirebase()">Add Chanel</b-btn>
+        <b-btn size="sm" @click="sendMessage()">Send Message</b-btn>
+      </b-col>
+    </b-row>
   </div>
 </template>
 <script>
@@ -104,20 +60,19 @@ import UrlConstant from '../../common/constant/common-url';
 import CommonConstant from '../../common/constant/common-constant';
 import CommonUtil from '../../common/utils/common-util';
 import { TopicService } from '../../services/service-provider';
+import TableSuperVisorDetail from './components/topic-detail/TableSuperVisorDetail';
+import TopicDetailDisplayInfo from './components/topic-detail/TopicDetailDisplayInfo';
+import { firebaseObj } from '../../config/firebaseConfig';
 
 export default {
-  created() {
-    console.log('created called.');
-    this.loadTopics();
+  components: {
+    tableSuperDetail: TableSuperVisorDetail,
+    topicDetailDisplayInfo: TopicDetailDisplayInfo
   },
   data() {
     return {
       topics: [],
       fields: [
-        {
-          key: 'id',
-          label: 'CapstoneId'
-        },
         {
           key: 'name_En',
           label: 'Name'
@@ -127,8 +82,8 @@ export default {
           label: 'Advisor'
         },
         {
-          key: 'duplicate',
-          label: 'Duplicate'
+          key: 'created_date',
+          label: 'Created Time'
         },
         {
           key: 'option',
@@ -140,13 +95,44 @@ export default {
         currentPage: 1,
         perPage: 10
       },
-      isLoading: false
+      detailData: {
+        program: {
+          name: ''
+        }
+      },
+      channels: [],
+      firstLoad: true,
+      channelRef: firebaseObj.database().ref('channels'),
+      messageRef: firebaseObj.database().ref('messages'),
+      channel: null,
+      messages: [],
+      listeners: [],
+      message: ''
       // selectTopic: null
     };
+  },
+  watch: {
+    topics(val) {
+      this.tableOptions.totalRows = val.length;
+    }
+  },
+  created() {
+    firebaseObj
+      .auth()
+      .signInWithEmailAndPassword('leman2@gmail.com', 'abc123')
+      .then(user => {
+        console.log(user);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   },
   mounted() {
     // Set the initial number of items
     this.tableOptions.totalRows = this.topics.length;
+    this.loadTopics();
+    this.addListeners();
+    this.addMessagesListeners();
   },
   methods: {
     // Trigger pagination to update the number of buttons/pages due to filtering
@@ -157,11 +143,11 @@ export default {
     showDetail(topic) {
       console.log(`TOpic: ${topic.name_En}`);
     },
-    async loadTopics() {
-      this.isLoading = true;
+    loadTopics() {
+      CommonUtil.addLoading();
       TopicService.getTopicByDepartmentHeadToReview(
         res => {
-          this.isLoading = false;
+          CommonUtil.removeLoading();
           if (res && res.length > 0) {
             res.forEach(item => {
               this.topics.push({
@@ -170,7 +156,7 @@ export default {
                 name_Vi: item.name_Vi,
                 advisorName: item.advisorName,
                 created_date: moment(item.createdDate).format(
-                  CommonConstant.DEFAULT_DATE_FORMAT
+                  CommonConstant.DEFAULT_TIME_FORMAT
                 ),
                 duplicatedTopics: item.duplicatedTopics,
                 status: item.status
@@ -179,7 +165,7 @@ export default {
           }
         },
         () => {
-          this.isLoading = false;
+          CommonUtil.removeLoading();
           CommonUtil.showNotification(
             'Error',
             'Server error!',
@@ -190,17 +176,123 @@ export default {
     },
     redirectToViewDetailPage(id) {
       this.$router.push({
-        path: UrlConstant.page.advisor.TOPIC_DETAIL.replace(':id', id)
+        path: UrlConstant.page.departmentHead.DH_TOPIC_DETAIL.replace(':id', id)
       });
     },
     formatTime(topic) {
-      return moment(topic).format(
-        CommonConstant.DEFAULT_DATE_FORMAT
+      return moment(topic).format(CommonConstant.DEFAULT_DATE_FORMAT);
+    },
+    addCustomDuplicatedTopics() {
+      if (this.topics !== []) {
+        const topic = this.topics[0];
+        topic.duplicatedTopics = [
+          {
+            id: 5,
+            name_En: 'Chess Online Learning System',
+            createdDate: 1571199962506,
+            advisorName: 'Nguyễn Văn A',
+            duplicatedTopics: []
+          },
+          {
+            id: 6,
+            name_En:
+              'Counseling software support treating diseases on ornamental plants',
+            createdDate: 1571200081075,
+            advisorName: 'Nguyễn Văn A',
+            duplicatedTopics: []
+          }
+        ];
+      }
+    },
+    addListeners() {
+      this.channelRef.on('child_added', snap => {
+        this.channels.push(snap.val());
+        if (this.firstLoad && this.channels.length > 0) {
+          this.channel = this.channels[0];
+        }
+        this.firstLoad = false;
+      });
+      // this.channelRef.on('value', snap => {
+      //   console.log(snap);
+      //   this.channels.push(snap.val());
+      //   if (this.firstLoad && this.channels.length > 0) {
+      //     this.channel = this.channels[0];
+      //   }
+      //   this.firstLoad = false;
+      // });
+    },
+    addMessagesListeners() {
+      // send messages by chanelID (replace userID later)
+      this.messageRef.child('-LrS558Q0WdNWQx52Uv5').on('child_added', snap => {
+        console.log('snap: ', snap);
+        const message = snap.val();
+        console.log('newmessage: ', message);
+        message.id = snap.key;
+        this.messages.push(message);
+        this.$nextTick(() => {});
+      });
+      this.addToListeners(
+        '-LrS558Q0WdNWQx52Uv5', // chanels id
+        this.messageRef,
+        'child_added'
       );
+    },
+    addToListeners(id, ref, event) {
+      const index = this.listeners.findIndex(
+        el => el.id === id && el.ref === ref && el.event === event
+      );
+      if (index === -1) {
+        this.listeners.push({
+          id,
+          ref,
+          event
+        });
+      }
+    },
+    addChanelFirebase() {
+      // let key = this.channelRef.push().key;
+      let newChannel = { id: 4, name: 'departmenthead' };
+      this.channelRef
+        .child(4)
+        .update(newChannel)
+        .then(() => {
+          console.log('create success chanel: departmenthead');
+        })
+        .catch(err => {
+          console.log(err);
+        }); // root/channels/newchannel
+    },
+    detachListener() {
+      this.channelRef.off();
+      console.log('offf');
+    },
+    sendMessage() {
+      let newMessage = {
+        user: {
+          id: '12345',
+          name: 'KIEU TRONG KHANH',
+          role: 'DEPARTMENTHEAD'
+        },
+        content: `Waynes aaa`,
+        timestamp: firebaseObj.database.ServerValue.TIMESTAMP
+      };
+      this.messageRef
+        .child('1')
+        .push()
+        .set(newMessage)
+        .then(() => {
+          console.log('new messages added: ', newMessage);
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
     // sendTopic(topic) {
     //   this.selectTopic = topic;
     // }
+  },
+  beforeDestroy() {
+    this.detachListener();
   }
 };
 </script>
@@ -208,5 +300,22 @@ export default {
 <style scoped>
 .spinner {
   color: #4ba89c;
+}
+.topic-detail-container {
+  width: 100%;
+}
+.topic-detail-container .header {
+  background: #013972;
+  font-weight: 600;
+  color: white;
+}
+.topic-detail-container .body .detail-label {
+  font-weight: 600;
+}
+.topic-detail-container .body .group-first-info {
+  background: #f3f3f3;
+  border-radius: 4px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 </style>

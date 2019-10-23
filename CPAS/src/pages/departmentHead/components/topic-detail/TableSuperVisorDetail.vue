@@ -29,7 +29,7 @@
           <td>{{ item.title }}</td>
         </tr>
       </template>
-      <template v-if="subAdvisors.length === 0 && !advisor">
+      <template v-if="subAdvisors.length === 0 && advisor === undefined">
         <tr>
           <td colspan="5" class="text-center">No data</td>
         </tr>
@@ -50,6 +50,10 @@ export default {
     init(data) {
       this.advisor = data.advisor;
       this.subAdvisors = data.subAdvisors;
+    },
+    clear() {
+      this.advisor = undefined;
+      this.subAdvisors = [];
     }
   }
 };
@@ -57,7 +61,7 @@ export default {
 
 <style scoped>
 .table-detail-container .table-header {
-  background: #4ba89c;
+  background: #4aabc3;
   color: white;
   font-size: 1.15rem;
   font-weight: 600;

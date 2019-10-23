@@ -1,7 +1,20 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col cols="12">
+  <b-row class="m-0">
+    <b-col cols="12 p-0 m-0">
+      <div class="page-title-container">
+        <div class="card card-shadow d-inline-block">
+          <font-awesome-icon icon="table" class="page-title-item" />
+        </div>
+        <div class="d-inline-block pl-2">
+          <div class="page-title-description-header">
+            Capstone Management
+          </div>
+          <div class="page-title-description-detail">
+            Committee can validate their topics.
+          </div>
+        </div>
+      </div>
+      <div class="p-3">
         <div class="card card-shadow">
           <div class="card-header custom">List Capstone Topic</div>
           <div class="card-body">
@@ -15,7 +28,7 @@
             >
               <!-- action column -->
               <template v-slot:cell(action)="row">
-                <template v-if="row.item.status === 4">
+                <template>
                   <b-button
                     variant="primary"
                     size="sm"
@@ -34,9 +47,9 @@
             ></b-pagination>
           </div>
         </div>
-      </b-col>
-    </b-row>
-  </b-container>
+      </div>
+    </b-col>
+  </b-row>
 </template>
 <script>
 import UrlConstant from '../../common/constant/common-url';
@@ -61,6 +74,11 @@ export default {
         perPage: 10
       }
     };
+  },
+  watch: {
+    items(val) {
+      this.tableOptions.totalRows = val.length;
+    }
   },
   mounted() {
     // set the initial number of items

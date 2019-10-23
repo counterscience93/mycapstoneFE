@@ -45,47 +45,11 @@
                   <topic-detail-display-info ref="topic-detail-comment" />
                 </b-row>
               </div>
-              <b-button variant="primary" v-b-modal.modal-1>Validate</b-button>
             </div>
           </div>
         </div>
       </b-col>
     </b-row>
-    <div>
-      <b-modal
-        id="modal-1"
-        :header-bg-variant="headerBgVariant"
-        :header-text-variant="headerTextVariant"
-        hide-footer
-        title="Tiêu chí đánh giá đồ án"
-      >
-        <div style="width:450px">
-          <div v-for="(item, index) in formData.questions" :key="index">
-            <b-checkbox
-              class="modal-text"
-              value="true"
-              v-model="formData.questions[index].isApproved"
-              >{{ item.content }}</b-checkbox
-            >
-            <b-form-input
-              class="modal-text"
-              v-model="formData.questions[index].comment"
-              placeholder="Enter a comment..."
-            ></b-form-input>
-          </div>
-        </div>
-        <b-button
-          style="margin-top:5px; margin-right:10px"
-          variant="outline-primary"
-          size="sm"
-          class="float-right"
-          @click="submit(formData.topicId)"
-        >
-          Save
-        </b-button>
-      </b-modal>
-    </div>
-  </div>
 </template>
 <script>
 import TableSuperVisorDetail from './components/TableSuperVisorDetail';
@@ -131,70 +95,6 @@ export default {
         path: UrlConstant.page.committe.CM_GETLIST_TOPIC
       });
     },
-    // get question
-    getQuestion() {
-      CommonUtil.addLoading();
-      const topicId = this.$route.params.id;
-      CommitteeService.getComment(
-        topicId,
-        result => {
-          CommonUtil.removeLoading();
-          if (result && result.length > 0) {
-            result.forEach(item => {
-              if (this.count < 5) {
-                this.formData.questions.push({
-                  id: item.id,
-                  content: item.question,
-                  isApproved: item.isApproved,
-                  comment: item.comment
-                });
-              }
-              this.count++;
-            });
-          }
-        },
-        () => {
-          CommonUtil.removeLoading();
-        }
-      );
-    },
-    // submit validate
-    submit(id) {
-      CommonUtil.addLoading();
-      const convertdata = this.convertData();
-      CommitteeService.postComment(
-        convertdata,
-        result => {
-          CommonUtil.showNotification(
-            'Success',
-            'Validate topic successfull!',
-            CommonConstant.NOTI_TYPE.SUCCESS
-          );
-          CommonUtil.removeLoading();
-          this.redirectGetTopic();
-        },
-        () => {
-          CommonUtil.removeLoading();
-          CommonUtil.showNotification(
-            'Error',
-            'Server error!',
-            CommonConstant.NOTI_TYPE.ERROR
-          );
-        }
-      );
-    },
-    // convert data
-    convertData() {
-      const tmp = JSON.parse(JSON.stringify(this.formData));
-      console.log(tmp);
-      const questions = this.formData.questions.map(item => ({
-        id: item.id,
-        isApproved: item.isApproved,
-        comment: item.comment
-      }));
-      tmp['questions'] = questions;
-      return tmp;
-    },
     // Init supervisor table
     initSuperTable(data) {
       this.$refs['table-super'].init({
@@ -226,7 +126,7 @@ export default {
       TopicService.getTopicById(
         topicId,
         result => {
-          this.nameEng = result.name_En;
+          this.nameEng = result.name_En
           this.formData.topicId = result.id;
           this.detailData = result;
           this.initSuperTable(result);

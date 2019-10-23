@@ -15,12 +15,22 @@
                 <div class="d-inline-block float-right p-2">
                   {{ username }}
                 </div>
-                <div class="d-inline-block float-right user-img-container ml-2">
-                  <img :src="userLogo" class="rounded-circle" />
-                </div>
                 <div class="d-inline-block float-right lang-container pr-2">
                   <div class="lang-img-container">
-                    <img :src="langLogo" class="rounded-circle" />
+                    <template v-if="messages.length > 0">
+                      <div class="circle-notification">
+                        {{ messages.length }}
+                      </div>
+                    </template>
+
+                    <font-awesome-icon
+                      icon="bell"
+                      @click="isShowNoti = !isShowNoti"
+                    />
+                    <!-- Notification -->
+                    <template v-if="isShowNoti">
+                      <notification />
+                    </template>
                   </div>
                 </div>
               </div>
@@ -33,14 +43,60 @@
 </template>
 
 <script>
+import { firebaseObj } from '../../config/firebaseConfig';
+import Notification from './Notification';
+
 export default {
+  components: {
+    Notification
+  },
   data() {
     return {
-      username: 'Nguyễn Quốc Bảo - K11',
-      userLogo:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSn4h6I3mMYRMYflFTvRQjSS8_vCTgC677yJaLnD8L0yaEiDH1e',
-      langLogo: require('../../assets/american.png')
+      isShowNoti: false,
+      username: 'Advisor Nguyen Quoc Bao',
+      messageRef: firebaseObj.database().ref('messages'), // retrive /messages realtime firebase db
+      messages: [], // list messages receive ( 20 rows)
+      currentMessage: null
     };
+  },
+  mounted() {
+    this.addMessagesListeners();
+  },
+  methods: {
+    addMessagesListeners() {
+      // send messages by chanelID (replace userID later)
+      this.messageRef.child('1').on('child_added', snap => {
+        const message = snap.val();
+        console.log('newmessage: ', message);
+        message.id = snap.key;
+        this.messages.push(message);
+        this.currentMessage = message;
+      });
+    },
+    deleteMessage() {
+      console.log(this.currentMessage.id);
+      this.messageRef
+        .child('1')
+        .child(this.currentMessage.id)
+        .remove();
+      var index = this.messages.findIndex(x => x.id === this.currentMessage.id);
+      this.messages.splice(index, 1);
+    },
+    updateMessage() {
+      console.log(this.currentMessage.id);
+      this.messageRef
+        .child('1')
+        .child(this.currentMessage.id)
+        .update({
+          isWatched: true
+        });
+    },
+    detachListener() {
+      this.messageRef.off();
+    }
+  },
+  beforeDestroy() {
+    this.detachListener();
   }
 };
 </script>
@@ -67,12 +123,22 @@ export default {
   border-right: 1px solid #dee2e6;
 }
 .app-header-content .lang-img-container {
-  background: #e8e8eb;
+  position: relative;
   padding: 0.44rem;
-  border-radius: 50%;
+  font-size: 1.2rem;
 }
-.app-header-content .lang-img-container img {
-  width: 1.7rem;
-  height: 1.7rem;
+.app-header-content .lang-img-container svg:hover {
+  cursor: pointer;
+}
+.circle-notification {
+  position: absolute;
+  top: 3px;
+  left: 15px;
+  background: red;
+  width: 15px;
+  height: 14px;
+  font-size: 10px;
+  text-align: center;
+  border-radius: 100%;
 }
 </style>

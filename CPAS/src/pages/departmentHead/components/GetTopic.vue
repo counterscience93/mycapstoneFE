@@ -1,20 +1,7 @@
 <template>
-  <b-row class="m-0">
-    <b-col cols="12 p-0 m-0">
-      <div class="page-title-container">
-        <div class="card card-shadow d-inline-block">
-          <font-awesome-icon icon="table" class="page-title-item" />
-        </div>
-        <div class="d-inline-block pl-2">
-          <div class="page-title-description-header">
-            Capstone Management
-          </div>
-          <div class="page-title-description-detail">
-            Department Head can view their topics.
-          </div>
-        </div>
-      </div>
-      <div class="p-3">
+  <b-container>
+    <b-row>
+      <b-col cols="12">
         <div class="card card-shadow">
           <div class="card-header custom">List Capstone Topic</div>
           <div class="card-body">
@@ -47,14 +34,14 @@
             ></b-pagination>
           </div>
         </div>
-      </div>
-    </b-col>
-  </b-row>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 <script>
 import UrlConstant from '../../common/constant/common-url';
 import CommonUtil from '../../common/utils/common-util';
-import { TopicService } from '../../services/service-provider';
+import { CommitteeService } from '../../services/service-provider';
 import CommonConstant from '../../common/constant/common-constant';
 import moment from 'moment';
 
@@ -99,7 +86,7 @@ export default {
     // get topic data
     getTopicData() {
       CommonUtil.addLoading();
-      TopicService.getTopic(
+      CommitteeService.getTopic(
         result => {
           CommonUtil.removeLoading();
           if (result && result.length > 0) {

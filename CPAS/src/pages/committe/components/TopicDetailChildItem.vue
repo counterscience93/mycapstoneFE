@@ -36,9 +36,6 @@
 <script>
 export default {
   props: ['data'],
-  created() {
-    console.log(this.data);
-  },
   data() {
     return {
       childData: [

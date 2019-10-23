@@ -24,6 +24,20 @@ Vue.use(CKEditor);
 Vue.use(Notifications);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
+// let firebaseConfig = {
+//   apiKey: 'AIzaSyBpX_Zkbk4I7Tj5jVtruHYC9NLTkIsG0sw',
+//   authDomain: 'capstone-web-firebase.firebaseapp.com',
+//   databaseURL: 'https://capstone-web-firebase.firebaseio.com',
+//   projectId: 'capstone-web-firebase',
+//   storageBucket: 'capstone-web-firebase.appspot.com',
+//   messagingSenderId: '959966253264',
+//   appId: '1:959966253264:web:8f1077a9c348116bf04ed5',
+//   measurementId: 'G-VRJFX2PYZ7'
+// };
+// firebase.initializeApp(firebaseConfig);
+// window.firebase = firebase;
+
+// const unsubcribe = firebase.auth().onAuthStateChanged(user => {
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
@@ -32,3 +46,4 @@ new Vue({
   components: { App },
   template: '<App/>'
 });
+// });

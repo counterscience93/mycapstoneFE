@@ -88,8 +88,8 @@
   </div>
 </template>
 <script>
-import TableSuperVisorDetail from './components/TableSuperVisorDetail';
-import TopicDetailDisplayInfo from './components/TopicDetailDisplayInfo';
+import TableSuperVisorDetail from './component/TableSuperVisorDetail';
+import TopicDetailDisplayInfo from './component/TopicDetailDisplayInfo';
 import CommonConstant from '../../common/constant/common-constant';
 import CommonUtil from '../../common/utils/common-util';
 import {

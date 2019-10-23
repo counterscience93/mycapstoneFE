@@ -1,7 +1,20 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col cols="12">
+  <b-row class="m-0">
+    <b-col cols="12 p-0 m-0">
+      <div class="page-title-container">
+        <div class="card card-shadow d-inline-block">
+          <font-awesome-icon icon="table" class="page-title-item" />
+        </div>
+        <div class="d-inline-block pl-2">
+          <div class="page-title-description-header">
+            Capstone Management
+          </div>
+          <div class="page-title-description-detail">
+            Training staff can public their topics.
+          </div>
+        </div>
+      </div>
+      <div class="p-3">
         <div class="card card-shadow">
           <div class="card-header custom">List Capstone Topic</div>
           <div class="card-body">
@@ -17,7 +30,7 @@
               <template v-slot:cell(action)="row">
                 <template v-if="row.item.status === 6 || row.item.status === 8">
                   <b-button
-                    variant="info"
+                    variant="secondary"
                     size="sm"
                     @click="changeStatus(row.item.id, 7)"
                     >Unpublished</b-button
@@ -25,11 +38,22 @@
                 </template>
                 <template v-else-if="row.item.status === 7">
                   <b-button
-                    variant="primary"
+                    variant="info"
                     size="sm"
                     v-model="formData.status"
                     @click="changeStatus(row.item.id, 8)"
                     >Published
+                  </b-button>
+                </template>
+              </template>
+              <template v-slot:cell(action2)="row">
+                <template>
+                  <b-button
+                    variant="primary"
+                    size="sm"
+                    @click="redirectToViewDetailPage(row.item.id)"
+                  >
+                    <font-awesome-icon icon="info" />
                   </b-button>
                 </template>
               </template>
@@ -42,15 +66,16 @@
             ></b-pagination>
           </div>
         </div>
-      </b-col>
-    </b-row>
-  </b-container>
+      </div>
+    </b-col>
+  </b-row>
 </template>
 <script>
 import moment from 'moment';
 import CommonUtil from '../../common/utils/common-util';
 import CommonConstant from '../../common/constant/common-constant';
 import { TopicService } from '../../services/service-provider';
+import UrlConstant from '../../common/constant/common-url';
 
 export default {
   data() {
@@ -59,7 +84,8 @@ export default {
         { key: 'nameTopic', label: 'Capstone Topic' },
         { key: 'advisor', label: 'Advisor' },
         { key: 'createdDate', label: 'Created Date' },
-        { key: 'action', label: 'Action' }
+        { key: 'action', label: 'Action' },
+        { key: 'action2', label: '' }
       ],
       items: [],
       formData: {
@@ -78,12 +104,24 @@ export default {
     this.tableOptions.totalRows = this.items.length;
     this.getTopicData();
   },
+  watch: {
+    items(val) {
+      this.tableOptions.totalRows = val.length;
+    }
+  },
   methods: {
     // trigger pagnination to update the number of pages
     onFiltered(filteredItems) {
       this.tableOptions.totalRows = filteredItems.length;
       this.tableOptions.currentPage = 1;
     },
+    // topic detail
+    redirectToViewDetailPage(id) {
+      this.$router.push({
+        path: UrlConstant.page.committe.CM_TOPIC_DETAIL.replace(':id', id)
+      });
+    },
+    // change status
     changeStatus(id, status) {
       CommonUtil.addLoading();
       const convertedData = this.convertData(id, status);
@@ -113,7 +151,6 @@ export default {
       const tmp = JSON.parse(JSON.stringify(this.formData));
       tmp['id'] = id;
       tmp['status'] = status;
-      console.log(tmp['id']);
       return tmp;
     },
     // get topic data
@@ -147,5 +184,8 @@ export default {
 <style scoped>
 .status-item {
   width: 80px;
+}
+.btn-back {
+  background-color: #4ba89c;
 }
 </style>

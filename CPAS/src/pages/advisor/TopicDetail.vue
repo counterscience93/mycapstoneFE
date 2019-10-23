@@ -6,7 +6,7 @@
           <div class="topic-detail-container">
             <div class="header-container">
               <div class="header text-center p-3 mb-2">
-                CAPSTONE PROJECT APPROVAL SYSTEM OF FPTU
+                {{ this.nameEng }}
               </div>
             </div>
             <div class="body-container p-3">
@@ -57,7 +57,6 @@
 
 <script>
 import TableSuperVisorDetail from './components/TableSuperVisorDetail';
-import TableStudentDetail from './components/TableStudentDetail';
 import TopicDetailDisplayInfo from './components/TopicDetailDisplayInfo';
 import CommonConstant from '../../common/constant/common-constant';
 import CommonUtil from '../../common/utils/common-util';
@@ -65,7 +64,6 @@ import { TopicService } from '../../services/service-provider';
 export default {
   components: {
     tableSuperDetail: TableSuperVisorDetail,
-    tableStudentDetail: TableStudentDetail,
     topicDetailDisplayInfo: TopicDetailDisplayInfo
   },
   data() {
@@ -73,8 +71,10 @@ export default {
       detailData: {
         program: {
           name: ''
-        }
-      }
+        },
+        nameTopic: ''
+      },
+      nameEng: ''
     };
   },
   mounted() {
@@ -112,6 +112,7 @@ export default {
       TopicService.getTopicById(
         topicId,
         result => {
+          this.nameEng = result.name_En;
           this.detailData = result;
           this.initSuperTable(result);
           this.initTopicDetail(result);

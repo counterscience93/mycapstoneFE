@@ -24,11 +24,11 @@ export default {
   // post comment
   postComment(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.post(
+      baseServerAxios.put(
         UrlConstant.api.question.POST_COMMENT,
         JSON.stringify({
-          id: data.topicId,
-          questions: data.question
+          topicId: data.topicId,
+          questions: data.questions
         })
       ),
       callback,

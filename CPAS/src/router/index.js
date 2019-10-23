@@ -13,15 +13,16 @@ import TrainingStaffImportStudent from '../pages/trainningStaff/ImportStudent.vu
 import trainningStaffGetGroup from '../pages/trainningStaff/GroupStudent.vue';
 // Student
 import StudentGetPublicTopic from '../pages/student/GetListPublicTopic.vue';
+import StudentGetTopicDetail from '../pages/student/StudentGetTopicDetail.vue';
 // department head
 import DepartmentHeadGetListStudent from '../pages/departmentHead/GetListStudent.vue';
-import DepartmentHeadGetTopic from '../pages/departmentHead/GetTopic.vue';
 import DepartmentHeadApprovedTopic from '../pages/departmentHead/ApprovedTopic.vue';
 import DepartmentHeadManageTopic from '../pages/departmentHead/ManageTopic.vue';
+import DepartmentHeadQuestionTable from '../pages/departmentHead/components/approve-topic/QuestionTable.vue';
+import DepartmentHeadTopicDetail from '../pages/departmentHead/TopicDetail.vue';
 // committee
 import CommitteeGetTopic from '../pages/committe/GetTopic.vue';
-import CommitteCheckValidate from '../pages/committe/ValidateTopic.vue';
-import CommitteGetTopicDetail from '../pages/committe/TopicDetail.vue'
+import CommitteGetTopicDetail from '../pages/committe/TopicDetail.vue';
 
 Vue.use(Router);
 
@@ -58,9 +59,9 @@ export default new Router({
       component: DepartmentHeadGetListStudent
     },
     {
-      path: UrlConstant.page.departmentHead.DH_GET_TOPIC,
-      name: 'DhGetTopic',
-      component: DepartmentHeadGetTopic
+      path: UrlConstant.page.departmentHead.DH_QUESTION_TABLE,
+      name: 'DhQuestionTable',
+      component: DepartmentHeadQuestionTable
     },
     {
       path: UrlConstant.page.departmentHead.DH_APPROVED_TOPIC,
@@ -73,19 +74,24 @@ export default new Router({
       component: DepartmentHeadManageTopic
     },
     {
+      path: UrlConstant.page.departmentHead.DH_TOPIC_DETAIL,
+      name: 'Detail topic',
+      component: DepartmentHeadTopicDetail
+    },
+    {
       path: UrlConstant.page.student.ST_GET_PUBLICTOPIC,
       name: 'StGetPublicTopic',
       component: StudentGetPublicTopic
     },
     {
+      path: UrlConstant.page.student.ST_TOPIC_DETAIL,
+      name: 'StGetTopicDetail',
+      component: StudentGetTopicDetail
+    },
+    {
       path: UrlConstant.page.committe.CM_GETLIST_TOPIC,
       name: 'CmGetListTopic',
       component: CommitteeGetTopic
-    },
-    {
-      path: UrlConstant.page.committe.CM_CHECKVALIDATE_TOPIC,
-      name: 'CmCheckValidate',
-      component: CommitteCheckValidate
     },
     {
       path: UrlConstant.page.committe.CM_TOPIC_DETAIL,

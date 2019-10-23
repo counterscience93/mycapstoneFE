@@ -9,7 +9,11 @@ import {
   faCheck,
   faAngleDoubleRight,
   faAngleRight,
-  faAngleLeft
+  faAngleLeft,
+  faFileAlt,
+  faTimes,
+  faBell,
+  faStickyNote
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -21,5 +25,9 @@ library.add(
   faCheck,
   faAngleRight,
   faAngleLeft,
-  faAngleDoubleRight
+  faAngleDoubleRight,
+  faFileAlt,
+  faTimes,
+  faBell,
+  faStickyNote
 );

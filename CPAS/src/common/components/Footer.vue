@@ -1,6 +1,6 @@
 <template>
   <div class="app-footer-container">
-    <div class="footer-item p-3">Copyright Nguyễn Quốc Bảo</div>
+    <div class="footer-item p-3">Copyright FPT University</div>
   </div>
 </template>
 

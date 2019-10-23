@@ -1,7 +1,20 @@
 <template>
-  <b-container>
-    <b-row>
-      <b-col cols="12">
+  <b-row class="m-0">
+    <b-col cols="12 p-0 m-0">
+      <div class="page-title-container">
+        <div class="card card-shadow d-inline-block">
+          <font-awesome-icon icon="table" class="page-title-item" />
+        </div>
+        <div class="d-inline-block pl-2">
+          <div class="page-title-description-header">
+            Capstone Management
+          </div>
+          <div class="page-title-description-detail">
+            Student can view public topics.
+          </div>
+        </div>
+      </div>
+      <div class="p-3">
         <div class="card card-shadow">
           <div class="card-header custom">List Capstone Topic</div>
           <div class="card-body">
@@ -13,50 +26,14 @@
               :per-page="tableOptions.perPage"
               @onfilteref="onFiltered"
             >
-              <!-- status column -->
-              <template v-slot:cell(status)="row">
-                <b-badge
-                  pill
-                  v-if="row.item.status === 'public'"
-                  variant="secondary"
-                  class="status-item"
-                >
-                  {{ row.item.status }}</b-badge
-                >
-                <b-badge
-                  pill
-                  v-if="row.item.status === 'taken'"
-                  variant="warning"
-                  class="status-item"
-                >
-                  {{ row.item.status }}</b-badge
-                >
-              </template>
               <!-- action column -->
               <template v-slot:cell(action)="row">
-                <template
-                  v-if="row.item.status === 8 || row.item.status === 'taking'"
-                >
-                  <b-button variant="info" size="sm"
-                    ><font-awesome-icon icon="info"
-                  /></b-button>
-                </template>
-                <template
-                  v-else-if="
-                    row.item.status === 'approved' ||
-                      row.item.status === 'rejected'
-                  "
-                >
+                <template>
                   <b-button
+                    @click="redirectToViewDetailPage(row.item.id)"
                     variant="primary"
                     size="sm"
-                    @click="redirectToCreatePage(row.item.data)"
                   >
-                    <font-awesome-icon icon="info" />
-                  </b-button>
-                </template>
-                <template v-if="row.item.status === 'draft'">
-                  <b-button variant="primary" size="sm">
                     <font-awesome-icon icon="info" />
                   </b-button>
                 </template>
@@ -70,15 +47,15 @@
             ></b-pagination>
           </div>
         </div>
-      </b-col>
-    </b-row>
-  </b-container>
+      </div>
+    </b-col>
+  </b-row>
 </template>
 <script>
 import UrlConstant from '../../common/constant/common-url';
 import CommonUtil from '../../common/utils/common-util';
-import moment from 'moment';
 import CommonConstant from '../../common/constant/common-constant';
+import moment from 'moment';
 import { TopicService } from '../../services/service-provider';
 
 export default {
@@ -98,6 +75,11 @@ export default {
       }
     };
   },
+  watch: {
+    items(val) {
+      this.tableOptions.totalRows = val.length;
+    }
+  },
   mounted() {
     // set the initial number of items
     this.tableOptions.totalRows = this.items.length;
@@ -109,9 +91,9 @@ export default {
       this.tableOptions.totalRows = filteredItems.length;
       this.tableOptions.currentPage = 1;
     },
-    redirectToCreatePage(id) {
+    redirectToViewDetailPage(id) {
       this.$router.push({
-        path: UrlConstant.page.advisor.CREATE_TOPIC
+        path: UrlConstant.page.student.ST_TOPIC_DETAIL.replace(':id', id)
       });
     },
     // get topic data
@@ -124,6 +106,7 @@ export default {
             result.forEach(item => {
               if (item.status === 8) {
                 this.items.push({
+                  id: item.id,
                   nameTopic: item.name_En,
                   advisor: item.advisor.fullName,
                   status: item.status,

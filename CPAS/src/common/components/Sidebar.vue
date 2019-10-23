@@ -87,23 +87,18 @@ export default {
         {
           header: 'Department Head',
           body: [
+            // {
+            //   name: 'List Student',
+            //   url: UrlConstant.page.departmentHead.DH_GET_STUDENT,
+            //   isActive: false
+            // },
             {
-              name: 'List Student',
-              url: UrlConstant.page.departmentHead.DH_GET_STUDENT,
-              isActive: false
-            },
-            {
-              name: 'List Topic',
-              url: UrlConstant.page.departmentHead.DH_GET_TOPIC,
-              isActive: false
-            },
-            {
-              name: 'Approved Topic',
+              name: 'Send Topic',
               url: UrlConstant.page.departmentHead.DH_APPROVED_TOPIC,
               isActive: false
             },
             {
-              name: 'Manage Topic',
+              name: 'Review Topic',
               url: UrlConstant.page.departmentHead.DH_MNG_TOPIC,
               isActive: false
             }

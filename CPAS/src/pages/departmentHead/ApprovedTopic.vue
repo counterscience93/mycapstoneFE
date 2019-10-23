@@ -17,164 +17,158 @@
         </div>
       </b-col>
     </b-row>
-    <b-row class="m-0">
-      <b-col cols="12" class="mt-2 p-3">
-        <div class="text-center">
-          <div
-            class="step-item-container"
-            :class="curStep >= 1 ? 'active' : ''"
-          >
-            <div class="step-icon">1</div>
-            <div class="step-detail">Choose Topic</div>
-            <div class="step-line">
-              <font-awesome-icon
-                icon="angle-double-right"
-                class="page-title-item"
-              />
-            </div>
-          </div>
-          <div
-            class="step-item-container"
-            :class="curStep >= 2 ? 'active' : ''"
-          >
-            <div class="step-icon">2</div>
-            <div class="step-detail">Choose Committee</div>
-            <div class="step-line">
-              <font-awesome-icon
-                icon="angle-double-right"
-                class="page-title-item"
-              />
-            </div>
-          </div>
-          <div
-            class="step-item-container"
-            :class="curStep === 3 ? 'active' : ''"
-          >
-            <div class="step-icon">3</div>
-            <div class="step-detail">Choose Time</div>
-          </div>
+    <div class="mt-2 pl-3 pt-3 pr-3">
+      <div class="tab-custom-container">
+        <div
+          class="d-inline-block tab-custom-item p-3"
+          :class="isTabApproved ? 'active' : ''"
+          @click="isTabApproved = true"
+        >
+          Send To Committee
         </div>
-      </b-col>
-    </b-row>
-    <!-- step 1 -->
-    <template v-if="curStep === 1">
-      <b-row class="m-0">
-        <b-col cols="12" class="mt-2 p-3">
-          <div class="card card-shadow">
-            <div class="card-header custom" id="approved-topic-table-container">
-              <div id="select-all-checkbox">
-                <b-form-checkbox
-                  v-model="isSelectAll"
-                  name="checkbox-1"
-                  value="all"
-                  unchecked-value=""
-                  @change="isCheckBoxClick = true"
+        <div
+          class="d-inline-block tab-custom-item p-3"
+          :class="isTabApproved ? '' : 'active'"
+          @click="isTabApproved = false"
+        >
+          Send to Tranning Staff
+        </div>
+      </div>
+    </div>
+    <div v-if="isTabApproved">
+      <!-- step 1 -->
+      <template v-if="curStep === 1">
+        <b-row class="m-0">
+          <b-col cols="12">
+            <div class="card card-shadow">
+              <step-ui :curStep="curStep" />
+              <div
+                class="card-header custom"
+                id="approved-topic-table-container"
+              >
+                <div id="select-all-checkbox">
+                  <b-form-checkbox
+                    v-model="isSelectAll"
+                    name="checkbox-1"
+                    value="all"
+                    unchecked-value=""
+                    @change="isCheckBoxClick = true"
+                  />
+                </div>
+
+                <b-table
+                  ref="selectableTable"
+                  selectable
+                  :select-mode="selectMode"
+                  sticky-header
+                  :fields="fields"
+                  :items="items"
+                  show-empty
+                  head-variant="light"
+                  @row-selected="onRowSelected"
+                >
+                  <template v-slot:empty="scope">
+                    <div class="text-center">{{ scope.emptyText }}</div>
+                  </template>
+                  <!-- selected column -->
+                  <template v-slot:cell(isActive)="{ rowSelected }">
+                    <div v-if="rowSelected" class="selected-row-item">
+                      <font-awesome-icon
+                        icon="check"
+                        class="selected-row-item-icon"
+                      />
+                    </div>
+                    <div v-else class="selected-row-item"></div>
+                  </template>
+                  <!-- action column -->
+                  <template v-slot:cell(action)="row">
+                    <b-button
+                      variant="outline-info"
+                      size="sm"
+                      @click="redirectToViewDetailPage(row.item.id)"
+                    >
+                      <font-awesome-icon icon="info" />
+                    </b-button>
+                  </template>
+                </b-table>
+                <step-button
+                  :curStep.sync="curStep"
+                  :selected.sync="selected"
+                  @update-step="updateStep($event)"
                 />
               </div>
-
-              <b-table
-                ref="selectableTable"
-                selectable
-                :select-mode="selectMode"
-                sticky-header
-                :fields="fields"
-                :items="items"
-                show-empty
-                head-variant="light"
-                @row-selected="onRowSelected"
-              >
-                <template v-slot:empty="scope">
-                  <div class="text-center">{{ scope.emptyText }}</div>
-                </template>
-                <!-- selected column -->
-                <template v-slot:cell(isActive)="{ rowSelected }">
-                  <div v-if="rowSelected" class="selected-row-item">
-                    <font-awesome-icon
-                      icon="check"
-                      class="selected-row-item-icon"
-                    />
-                  </div>
-                  <div v-else class="selected-row-item"></div>
-                </template>
-                <!-- action column -->
-                <template v-slot:cell(action)="row">
-                  <b-button
-                    variant="outline-info"
-                    size="sm"
-                    @click="redirectToViewDetailPage(row.item.id)"
-                  >
-                    <font-awesome-icon icon="info" />
-                  </b-button>
-                </template>
-              </b-table>
-              <step-button
-                :curStep.sync="curStep"
-                :selected.sync="selected"
-                @update-step="updateStep($event)"
-              />
             </div>
-          </div>
-        </b-col>
-      </b-row>
-    </template>
-
-    <!-- step 2 -->
-    <template v-if="selected.length > 0 && curStep === 2">
-      <b-row class="m-0">
-        <b-col cols="12" class="mt-2 p-3">
-          <div class="card card-shadow d-inline-block w-100 p-3">
-            <!-- Advisors -->
-            <label for="input-title">Advisors:</label>
-            <multiselect
-              class="mb-3"
-              v-model="formData.advisors"
-              placeholder="Search a tag"
-              label="text"
-              track-by="value"
-              :options="optionsData.advisors"
-              :multiple="true"
-              :taggable="true"
-            />
-            <step-button
-              :curStep.sync="curStep"
-              :selected.sync="selected"
-              :advisors.sync="formData.advisors"
-              @update-step="updateStep($event)"
-            />
-          </div>
-        </b-col>
-      </b-row>
-    </template>
-    <!-- step 3 -->
-    <template v-if="curStep === 3">
-      <b-row class="m-0">
-        <b-col cols="12" class="mt-2 p-3">
-          <div class="card card-shadow d-inline-block w-100 p-3">
-            <date-picker
-              type="datetime"
-              v-model="dateRange"
-              lang="en"
-              format="MM-DD-YYYY HH:mm"
-              :time-picker-options="{
-                start: '00:00',
-                step: '00:30',
-                end: '23:30'
-              }"
-              confirm
-              class="w-100"
-            />
-            <step-button
-              :curStep.sync="curStep"
-              :selected.sync="selected"
-              :dateRange.sync="dateRange"
-              :advisors.sync="formData.advisors"
-              @update-step="updateStep($event)"
-              @submit="submitAction($event)"
-            />
-          </div>
-        </b-col>
-      </b-row>
-    </template>
+          </b-col>
+        </b-row>
+      </template>
+      <!-- step 2 -->
+      <template v-if="selected.length > 0 && curStep === 2">
+        <b-row class="m-0">
+          <b-col cols="12">
+            <div class="card card-shadow">
+              <step-ui :curStep="curStep" />
+              <div class="d-inline-block w-100 p-3">
+                <!-- Advisors -->
+                <label for="input-title">Advisors:</label>
+                <multiselect
+                  class="mb-3"
+                  v-model="formData.advisors"
+                  placeholder="Search a tag"
+                  label="text"
+                  track-by="value"
+                  :options="optionsData.advisors"
+                  :multiple="true"
+                  :taggable="true"
+                />
+                <step-button
+                  :curStep.sync="curStep"
+                  :selected.sync="selected"
+                  :advisors.sync="formData.advisors"
+                  @update-step="updateStep($event)"
+                />
+              </div>
+            </div>
+          </b-col>
+        </b-row>
+      </template>
+      <!-- step 3 -->
+      <template v-if="curStep === 3">
+        <b-row class="m-0">
+          <b-col cols="12">
+            <div class="card card-shadow">
+              <step-ui :curStep="curStep" />
+              <div class="d-inline-block w-100 p-3">
+                <date-picker
+                  type="datetime"
+                  v-model="dateRange"
+                  lang="en"
+                  format="MM-DD-YYYY HH:mm"
+                  :time-picker-options="{
+                    start: '00:00',
+                    step: '00:30',
+                    end: '23:30'
+                  }"
+                  confirm
+                  class="w-100"
+                />
+                <step-button
+                  :curStep.sync="curStep"
+                  :selected.sync="selected"
+                  :dateRange.sync="dateRange"
+                  :advisors.sync="formData.advisors"
+                  @update-step="updateStep($event)"
+                  @submit="submitAction($event)"
+                />
+              </div>
+            </div>
+          </b-col>
+        </b-row>
+      </template>
+    </div>
+    <!-- Send to tranning staff -->
+    <div v-if="!isTabApproved">
+      <send-topic />
+    </div>
   </div>
 </template>
 
@@ -182,24 +176,25 @@
 import moment from 'moment';
 import Multiselect from 'vue-multiselect';
 import DatePicker from 'vue2-datepicker';
-import {
-  TopicService,
-  AdvisorService,
-  DHService
-} from '../../services/service-provider';
+import { AdvisorService, DHService } from '../../services/service-provider';
 import UrlConstant from '../../common/constant/common-url';
 import CommonUtil from '../../common/utils/common-util';
 import CommonConstant from '../../common/constant/common-constant';
-import StepButton from './components/StepButton';
+import StepUI from './components/approve-topic/StepUI';
+import StepButton from './components/approve-topic/StepButton';
+import SendTopic from './components/approve-topic/SendToTranningStaff';
 
 export default {
   components: {
     multiselect: Multiselect,
     stepButton: StepButton,
-    DatePicker
+    DatePicker,
+    stepUi: StepUI,
+    sendTopic: SendTopic
   },
   data() {
     return {
+      isTabApproved: true,
       curStep: 1,
       isSelectAll: '',
       isCheckBoxClick: false,
@@ -264,6 +259,8 @@ export default {
       this.isSelectAll = '';
       this.selected = [];
       this.formData.advisors = [];
+      this.items = [];
+      this.getApprovedTopic();
     },
     // Submit action
     submitAction(val) {
@@ -317,7 +314,7 @@ export default {
     // Get approved topic
     getApprovedTopic() {
       CommonUtil.addLoading();
-      TopicService.dhGetApprovedTopic(
+      DHService.getApprovedTopic(
         result => {
           CommonUtil.removeLoading();
           if (result && result.length > 0) {
@@ -390,40 +387,27 @@ export default {
 #select-all-checkbox .custom-control.custom-checkbox {
   position: absolute;
   z-index: 3;
-  top: 25px;
+  top: 130px;
   left: 30px;
 }
 </style>
 <style scoped>
-.step-item-container {
-  display: inline-block;
+.tab-custom-container {
+  position: relative;
+  top: 2px;
+  z-index: 1;
 }
-.step-item-container.active .step-icon {
-  background: #91d73a;
+.tab-custom-container .tab-custom-item {
+  background: #f6f6f6;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 }
-.step-item-container.active .step-detail,
-.step-item-container.active .step-line {
-  color: #91d73a;
+.tab-custom-container .tab-custom-item:hover {
+  cursor: pointer;
 }
-.step-item-container .step-icon {
-  padding: 20px;
-  border-radius: 100%;
-  background: #c8c8c8;
-  display: inline-block;
-  color: white;
-  margin-right: 5px;
-  font-weight: 600;
-}
-.step-item-container .step-detail {
-  color: #a3a3a3;
-  display: inline-block;
-  font-weight: 600;
-}
-.step-item-container .step-line {
-  font-size: 1.5rem;
-  transform: scaleY(1.8);
-  margin: 0 30px 0 30px;
-  color: #a3a3a3;
-  display: inline-block;
+.tab-custom-container .tab-custom-item.active {
+  border-bottom: 2px solid #3f6ad8;
+  background: white;
+  cursor: default;
 }
 </style>
