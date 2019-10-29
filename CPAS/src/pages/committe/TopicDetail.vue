@@ -158,35 +158,45 @@ export default {
         }
       );
     },
+    // check comment validate
+    checkValidate() {
+      this.formData.questions.forEach(element => {
+        if (element.isApproved === false && element.comment === null) {
+          console.log('Error');
+        }
+      });
+    },
     // submit validate
     submit(id) {
-      CommonUtil.addLoading();
-      const convertdata = this.convertData();
-      CommitteeService.postComment(
-        convertdata,
-        result => {
-          CommonUtil.showNotification(
-            'Success',
-            'Validate topic successfull!',
-            CommonConstant.NOTI_TYPE.SUCCESS
-          );
-          CommonUtil.removeLoading();
-          this.redirectGetTopic();
-        },
-        () => {
-          CommonUtil.removeLoading();
-          CommonUtil.showNotification(
-            'Error',
-            'Server error!',
-            CommonConstant.NOTI_TYPE.ERROR
-          );
-        }
-      );
+      if (this.checkValidate()) {
+      } else {
+        CommonUtil.addLoading();
+        const convertdata = this.convertData();
+        CommitteeService.postComment(
+          convertdata,
+          result => {
+            CommonUtil.showNotification(
+              'Success',
+              'Validate topic successfull!',
+              CommonConstant.NOTI_TYPE.SUCCESS
+            );
+            CommonUtil.removeLoading();
+            this.redirectGetTopic();
+          },
+          () => {
+            CommonUtil.removeLoading();
+            CommonUtil.showNotification(
+              'Error',
+              'Server error!',
+              CommonConstant.NOTI_TYPE.ERROR
+            );
+          }
+        );
+      }
     },
     // convert data
     convertData() {
       const tmp = JSON.parse(JSON.stringify(this.formData));
-      console.log(tmp);
       const questions = this.formData.questions.map(item => ({
         id: item.id,
         isApproved: item.isApproved,

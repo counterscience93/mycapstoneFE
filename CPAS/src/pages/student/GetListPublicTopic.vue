@@ -6,12 +6,8 @@
           <font-awesome-icon icon="table" class="page-title-item" />
         </div>
         <div class="d-inline-block pl-2">
-          <div class="page-title-description-header">
-            Capstone Management
-          </div>
-          <div class="page-title-description-detail">
-            Student can view public topics.
-          </div>
+          <div class="page-title-description-header">Capstone Management</div>
+          <div class="page-title-description-detail">Student can view public topics.</div>
         </div>
       </div>
       <div class="p-3">
@@ -100,11 +96,17 @@ export default {
     getTopicData() {
       CommonUtil.addLoading();
       TopicService.getTopic(
+        {
+          pageIndex: 1,
+          pageSize: 10,
+          sortSlect: true
+        },
         result => {
           CommonUtil.removeLoading();
-          if (result && result.length > 0) {
-            result.forEach(item => {
+          if (result && result.result.length > 0) {
+            result.result.forEach(item => {
               if (item.status === 8) {
+                console.log('item', item)
                 this.items.push({
                   id: item.id,
                   nameTopic: item.name_En,

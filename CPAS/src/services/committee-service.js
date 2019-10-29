@@ -6,7 +6,7 @@ export default {
   // get question for committe
   getQuestion(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.question.GET_QUESTION),
+      baseServerAxios().get(UrlConstant.api.question.GET_QUESTION),
       callback,
       errorCallback
     );
@@ -14,7 +14,7 @@ export default {
   // get comment from dh
   getComment(id, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(
+      baseServerAxios().get(
         UrlConstant.api.question.GET_COMMITTE_COMMENT.replace('{topicId}', id)
       ),
       callback,
@@ -24,7 +24,7 @@ export default {
   // post comment
   postComment(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.put(
+      baseServerAxios().put(
         UrlConstant.api.question.POST_COMMENT,
         JSON.stringify({
           topicId: data.topicId,
@@ -38,7 +38,7 @@ export default {
   // get topic
   getTopic(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.committee.GET_TOPIC),
+      baseServerAxios().get(UrlConstant.api.committee.GET_TOPIC),
       callback,
       errorCallback
     );

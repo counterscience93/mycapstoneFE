@@ -4,9 +4,16 @@ import UrlConstant from '../common/constant/common-url';
 
 export default {
   // Get Topic
-  getTopic(callback, errorCallback) {
+  getTopic(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.topic.GET_TOPIC),
+      baseServerAxios().get(UrlConstant.api.topic.ADVISOR_GET_TOPIC, {
+        params: {
+          pageIndex: data.pageIndex,
+          pageSize: data.pageSize,
+          sort: data.nameSelect,
+          isAsc: data.sortSlect
+        }
+      }),
       callback,
       errorCallback
     );
@@ -14,7 +21,7 @@ export default {
   // Get topic by id
   getTopicById(id, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(
+      baseServerAxios().get(
         UrlConstant.api.topic.GET_TOPIC_BY_ID.replace('{id}', id)
       ),
       callback,
@@ -24,7 +31,7 @@ export default {
   // Create topic
   createTopic(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.post(
+      baseServerAxios().post(
         UrlConstant.api.advisor.CREATE_TOPIC,
         JSON.stringify({
           techniques: data.techniques,
@@ -54,7 +61,7 @@ export default {
   // Update topic
   updateTopic(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.put(
+      baseServerAxios().put(
         UrlConstant.api.advisor.UPDATE_TOPIC,
         JSON.stringify({
           id: data.id,
@@ -85,7 +92,7 @@ export default {
   // get topic by status
   getTopicByStatus(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.topic.GET_TOPIC_BY_STATUS),
+      baseServerAxios().get(UrlConstant.api.topic.GET_TOPIC_BY_STATUS),
       callback,
       errorCallback
     );
@@ -93,7 +100,7 @@ export default {
   // change status of ts
   postChangeStatus(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.post(
+      baseServerAxios().post(
         UrlConstant.api.topic.TS_POST_TOPIC_STATUS,
         JSON.stringify({
           id: data.id,
@@ -106,7 +113,7 @@ export default {
   },
   getTopicByDepartmentHeadToReview(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.topic.GET_DH_TOPIC_REVIEW),
+      baseServerAxios().get(UrlConstant.api.topic.GET_DH_TOPIC_REVIEW),
       callback,
       errorCallback
     );

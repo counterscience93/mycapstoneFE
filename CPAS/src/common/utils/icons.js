@@ -13,7 +13,10 @@ import {
   faFileAlt,
   faTimes,
   faBell,
-  faStickyNote
+  faStickyNote,
+  faSignOutAlt,
+  faCaretDown,
+  faTrashAlt
 } from '@fortawesome/free-solid-svg-icons';
 
 library.add(
@@ -29,5 +32,8 @@ library.add(
   faFileAlt,
   faTimes,
   faBell,
-  faStickyNote
+  faStickyNote,
+  faSignOutAlt,
+  faCaretDown,
+  faTrashAlt
 );

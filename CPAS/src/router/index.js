@@ -1,11 +1,14 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import UrlConstant from '../common/constant/common-url';
+import CommonUtil from '../common/utils/common-util';
+import RouterGuard from './router-guard';
 // Advisor
 import AdvisorTopicMng from '../pages/advisor/TopicMng.vue';
 import AdvisorCreateTopic from '../pages/advisor/CreateTopic.vue';
 import AdvisorSearchTopic from '../pages/advisor/SearchTopic.vue';
 import AdvisorTopicDetail from '../pages/advisor/TopicDetail.vue';
+import AdvisorGetTopic from '../pages/advisor/AdvisorGetTopic.vue';
 // Training Staff
 import TrainningStaffPublishedTopic from '../pages/trainningStaff/ListingCapstone.vue';
 import TrainningStaffStudentMng from '../pages/trainningStaff/StudentMng.vue';
@@ -23,15 +26,18 @@ import DepartmentHeadTopicDetail from '../pages/departmentHead/TopicDetail.vue';
 // committee
 import CommitteeGetTopic from '../pages/committe/GetTopic.vue';
 import CommitteGetTopicDetail from '../pages/committe/TopicDetail.vue';
+// user
+import Login from '../pages/user/Login.vue';
+import WordDemo from '../pages/user/WordDemo.vue';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     {
       path: UrlConstant.page.DEFAULT,
       name: 'Default',
-      component: TrainningStaffPublishedTopic
+      component: Login
     },
     {
       path: UrlConstant.page.trainningStaff.TS_PUBLISHED_TOPIC,
@@ -99,6 +105,11 @@ export default new Router({
       component: CommitteGetTopicDetail
     },
     {
+      path: UrlConstant.page.advisor.GET_TOPIC,
+      name: 'AdvisorGetTopic',
+      component: AdvisorGetTopic
+    },
+    {
       path: UrlConstant.page.advisor.TOPIC_MNG,
       name: 'AdvisorTopicMng',
       component: AdvisorTopicMng
@@ -118,7 +129,56 @@ export default new Router({
       name: 'AdvisorTopicDetail',
       component: AdvisorTopicDetail
     },
+    {
+      path: UrlConstant.page.user.LOGIN,
+      name: 'Log in',
+      component: Login
+    },
+    {
+      path: '/wordexport',
+      name: 'Word',
+      component: WordDemo
+    },
     { path: '*', redirect: UrlConstant.page.DEFAULT }
   ],
   mode: 'history'
 });
+
+router.beforeEach((to, from, next) => {
+  const accessToken = CommonUtil.getCookies('access_token');
+  if (
+    to.path !== UrlConstant.page.user.LOGIN &&
+    from.path !== UrlConstant.page.DEFAULT
+  ) {
+    const isLoginExpired = RouterGuard.isLoginExpired(accessToken);
+    // Check expired
+    if (isLoginExpired) {
+      localStorage.removeItem('userInfo');
+      const pathName = window.location.pathname;
+      if (pathName !== UrlConstant.page.user.LOGIN) {
+        next('/');
+      }
+    } else {
+      handleValidLoginData(accessToken, to, next);
+    }
+  } else {
+    handleValidLoginData(accessToken, to, next);
+  }
+});
+
+const handleValidLoginData = (accessToken, to, next) => {
+  const isValid = RouterGuard.initUserLogin(accessToken);
+  // Handle local storage data
+  if (isValid) {
+    next();
+  } else {
+    CommonUtil.removeCookies('access_token');
+    if (to.path === UrlConstant.page.user.LOGIN) {
+      next();
+    } else {
+      next('/');
+    }
+  }
+};
+
+export default router;

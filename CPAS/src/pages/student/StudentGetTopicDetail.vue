@@ -2,28 +2,22 @@
   <div>
     <b-row class="m-0">
       <b-col cols="12" class="mt-2">
-        <div class="card ">
-          <div class="topic-detail-container">
+        <div class="card">
+          <div class="topic-detail-container" id="content">
             <div class="header-container">
-              <div class="header text-center p-3 mb-2">
-                {{ this.nameEng }}
-              </div>
+              <div class="header text-center p-3 mb-2">{{ this.nameEng }}</div>
             </div>
             <div class="body-container p-3">
               <div class="body p-3">
                 <b-row class="group-first">
                   <b-col cols="6 mb-2">
-                    <div class="detail-label d-inline-block">
-                      Profession:
-                    </div>
+                    <div class="detail-label d-inline-block">Profession:</div>
                     <div class="detail-info d-inline-block">
                       Software Engineer
                     </div>
                   </b-col>
                   <b-col cols="6 mb-2">
-                    <div class="detail-label d-inline-block">
-                      Specialty:
-                    </div>
+                    <div class="detail-label d-inline-block">Specialty:</div>
                     <div class="detail-info d-inline-block">
                       {{ detailData.program.name }}
                     </div>
@@ -32,20 +26,23 @@
                     <div class="detail-label d-inline-block">
                       Kind of person make registers:
                     </div>
-                    <div class="detail-info d-inline-block">
-                      Advisor
-                    </div>
+                    <div class="detail-info d-inline-block">Advisor</div>
                   </b-col>
                 </b-row>
                 <b-row>
-                  <table-super-detail ref="table-super" />
+                  <table-super-visor-detail ref="table-super" />
                 </b-row>
                 <b-row>
                   <topic-detail-display-info ref="topic-detail-content" />
                   <topic-detail-display-info ref="topic-detail-comment" />
                 </b-row>
               </div>
-              <b-button variant="primary" v-b-modal.modal-1>Validate</b-button>
+              <b-button size="lg" variant="primary" v-b-modal.modal-1
+                >Validate</b-button
+              >
+              <b-button size="lg" variant="primary" @click="exportTopic()"
+                >Export to Doc</b-button
+              >
             </div>
           </div>
         </div>
@@ -80,9 +77,8 @@
           size="sm"
           class="float-right"
           @click="submit(formData.topicId)"
+          >Save</b-button
         >
-          Save
-        </b-button>
       </b-modal>
     </div>
   </div>
@@ -97,11 +93,14 @@ import {
   CommitteeService
 } from '../../services/service-provider';
 import UrlConstant from '../../common/constant/common-url';
+import * as docx from 'docx';
+import * as fs from 'fs';
 
+import { saveAs } from 'file-saver';
 export default {
   components: {
-    tableSuperDetail: TableSuperVisorDetail,
-    topicDetailDisplayInfo: TopicDetailDisplayInfo
+    TableSuperVisorDetail,
+    TopicDetailDisplayInfo
   },
   data() {
     return {
@@ -242,6 +241,59 @@ export default {
           );
         }
       );
+    },
+    exportTopic() {
+      // Create document
+      const doc = new docx.Document({
+        creator: 'FPT University',
+        title: 'Capstone Project',
+        description: 'Capstone Project'
+      });
+
+      // Documents contain sections, you can have multiple sections per document, go here to learn more about sections
+      // This simple example will only contain one section
+      doc.addSection({
+        properties: {},
+        headers: {
+          default: new docx.Header({
+            children: [new docx.Paragraph('CAPSTONE PROJECT REGISTER')]
+          })
+        },
+        footers: {
+          default: new docx.Footer({
+            children: [new docx.Paragraph('11.14-BM/DH/HDCV/FU 1/0')]
+          })
+        },
+        children: [
+          new docx.Paragraph({
+            text: 'CAPSTONE PROJECT REGISTER',
+            heading: docx.HeadingLevel.HEADING_2,
+            alignment: docx.AlignmentType.CENTER,
+            size: 30
+          }),
+          new docx.Paragraph({
+            children: [
+              new docx.TextRun('Hello World'),
+              new docx.TextRun({
+                text: 'Foo Bar',
+                bold: true
+              }),
+              new docx.TextRun({
+                text: 'Github is the best',
+                bold: true
+              }).tab()
+            ]
+          })
+        ]
+      });
+      console.log(fs);
+
+      // Used to export the file into a .docx file
+      docx.Packer.toBlob(doc).then(blob => {
+        console.log(blob);
+        saveAs(blob, `${this.nameEng}.docx`);
+        console.log('Document created successfully');
+      });
     }
   }
 };

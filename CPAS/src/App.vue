@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <loading />
-    <div id="app-container">
+    <div v-if="userInfo" id="app-container">
       <header-custom />
       <notifications group="notification" position="top right" />
       <b-row class="p-0 m-0">
@@ -18,10 +18,14 @@
         </b-col>
       </b-row>
     </div>
+    <div v-else>
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import Header from './common/components/Header';
 import Sidebar from './common/components/Sidebar';
 import Footer from './common/components/Footer';
@@ -32,7 +36,16 @@ export default {
     sidebarCustom: Sidebar,
     footerCustom: Footer,
     loading: Loading
-  }
+  },
+  data() {
+    return {};
+  },
+  computed: {
+    ...mapGetters({
+      userInfo: 'userInfo'
+    })
+  },
+  methods: {}
 };
 </script>
 
@@ -44,7 +57,9 @@ body {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #eef1f6;
+}
+#app-container {
+  min-width: 1024px;
 }
 #app-body-container {
   padding-top: 57px;

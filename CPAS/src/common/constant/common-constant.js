@@ -19,5 +19,13 @@ export default {
     INFO: 'info'
   },
   DEFAULT_TIME_FORMAT: 'DD/MM/YYYY HH:mm:ss',
-  DEFAULT_DATE_FORMAT: 'DD/MM/YYYY'
+  DEFAULT_DATE_FORMAT: 'DD/MM/YYYY',
+  ROLE: {
+    '0': 'student',
+    '1': 'trainning staff',
+    '2': 'advisor',
+    '3': 'committee',
+    '4': 'department head'
+  },
+  DEFAULT_EXPIRED_TIME_COOKIE: 1800000 // 30 minutes
 };

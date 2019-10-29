@@ -24,15 +24,29 @@
       </div>
       <div class="p-3">
         <div class="card card-shadow">
-          <div class="card-header custom">Capstone Management Table</div>
+          <div class="card-sort-custom">
+            <label>Sort by </label>
+            <b-form-select
+              class="b-form-select"
+              v-model="selected"
+              :options="sortOption"
+              @change="getTopicData()"
+            ></b-form-select>
+            <b-form-select
+              class="b-form-select"
+              v-model="selectedNum"
+              :options="sortNum"
+              @change="getTopicData()"
+            ></b-form-select>
+          </div>
           <div class="card-body">
             <b-table
-              hover
+              id="topic-table"
+              responsive="sm"
               :items="items"
               :fields="fields"
               :current-page="tableOptions.currentPage"
-              :per-page="tableOptions.perPage"
-              @filtered="onFiltered"
+              :per-page="0"
             >
               <!-- status column -->
               <template v-slot:cell(status)="row">
@@ -183,9 +197,11 @@
             </b-table>
             <b-pagination
               v-model="tableOptions.currentPage"
-              :total-rows="tableOptions.totalRows"
+              :total-rows="rows"
               :per-page="tableOptions.perPage"
               size="sm"
+              aria-controls="topic-table"
+              @input="getTopicData()"
             ></b-pagination>
           </div>
         </div>
@@ -229,32 +245,45 @@ export default {
       ],
       items: [],
       tableOptions: {
-        totalRows: 1,
+        totalRows: '',
         currentPage: 1,
         perPage: 10
+      },
+      selected: 'createdDate',
+      sortOption: [
+        { value: 'name_En', text: 'English Name' },
+        { value: 'createdDate', text: 'Created Date' },
+        { value: 'status', text: 'Status' }
+      ],
+      selectedNum: 'true',
+      sortNum: [
+        { value: 'false', text: 'Descending' },
+        { value: 'true', text: 'Ascending' }
+      ],
+      optionData: {
+        nameSelect: '',
+        sortSlect: '',
+        pageIndex: '',
+        pageSize: ''
       }
     };
   },
-  watch: {
-    items(val) {
-      this.tableOptions.totalRows = val.length;
+  computed: {
+    rows() {
+      return this.tableOptions.totalRows;
     }
   },
   mounted() {
-    // Set the initial number of items
-    this.tableOptions.totalRows = this.items.length;
     // Get topic data
     this.getTopicData();
   },
   methods: {
+    onfiltered() {
+      this.getTopicData();
+    },
     // Show note modal
     showNoteModal(data) {
       this.$refs['note-modal'].init(data);
-    },
-    // Trigger pagination to update the number of buttons/pages due to filtering
-    onFiltered(filteredItems) {
-      this.tableOptions.totalRows = filteredItems.length;
-      this.tableOptions.currentPage = 1;
     },
     // Redirect to Create topic page
     redirectToCreatePage(id) {
@@ -270,24 +299,27 @@ export default {
     },
     // Get topic data
     getTopicData() {
+      this.items = [];
       CommonUtil.addLoading();
+      const convertData = this.convertData();
       TopicService.getTopic(
+        convertData,
         result => {
           CommonUtil.removeLoading();
-          if (result && result.length > 0) {
-            result.forEach(item => {
-              this.items.push({
-                id: item.id,
-                note: item.note,
-                nameEng: item.name_En,
-                nameVi: item.name_Vi,
-                created_date: moment(item.createdDate).format(
-                  CommonConstant.DEFAULT_TIME_FORMAT
-                ),
-                status: item.status
-              });
+          result.result.forEach(item => {
+            this.items.push({
+              id: item.id,
+              nameEng: item.name_En,
+              name_Vi: item.name_Vi,
+              advisorName: item.advisorName,
+              created_date: moment(item.createdDate).format(
+                CommonConstant.DEFAULT_TIME_FORMAT
+              ),
+              status: item.status
             });
-          }
+          });
+          this.tableOptions.totalRows = result.totalItems;
+          console.log('item + ', this.items);
         },
         () => {
           CommonUtil.removeLoading();
@@ -298,6 +330,14 @@ export default {
           );
         }
       );
+    },
+    // convert data
+    convertData() {
+      this.optionData.nameSelect = this.selected;
+      this.optionData.sortSlect = this.selectedNum;
+      this.optionData.pageIndex = this.tableOptions.currentPage;
+      this.optionData.pageSize = this.tableOptions.perPage;
+      return this.optionData;
     }
   }
 };
@@ -310,5 +350,15 @@ export default {
 .card-body button {
   width: 32px;
   height: 32px;
+}
+.b-form-select {
+  width: 150px;
+  height: 35px;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+.card-sort-custom {
+  margin-left: 40px;
+  margin-top: 20px;
 }
 </style>

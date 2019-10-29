@@ -5,7 +5,7 @@ import UrlConstant from '../common/constant/common-url';
 export default {
   getProgram(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.program.GET_PROGRAM),
+      baseServerAxios().get(UrlConstant.api.program.GET_PROGRAM),
       callback,
       errorCallback
     );

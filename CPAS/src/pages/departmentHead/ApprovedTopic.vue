@@ -31,7 +31,7 @@
           :class="isTabApproved ? '' : 'active'"
           @click="isTabApproved = false"
         >
-          Send to Tranning Staff
+          Send to Trainning Staff
         </div>
       </div>
     </div>
@@ -165,7 +165,7 @@
         </b-row>
       </template>
     </div>
-    <!-- Send to tranning staff -->
+    <!-- Send to trainning staff -->
     <div v-if="!isTabApproved">
       <send-topic />
     </div>
@@ -182,7 +182,7 @@ import CommonUtil from '../../common/utils/common-util';
 import CommonConstant from '../../common/constant/common-constant';
 import StepUI from './components/approve-topic/StepUI';
 import StepButton from './components/approve-topic/StepButton';
-import SendTopic from './components/approve-topic/SendToTranningStaff';
+import SendTopic from './components/approve-topic/SendToTrainningStaff';
 
 export default {
   components: {

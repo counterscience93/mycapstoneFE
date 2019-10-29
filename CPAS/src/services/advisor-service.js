@@ -6,7 +6,7 @@ export default {
   // Get advisor
   getAdvisor(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.advisor.GET_ADVISOR),
+      baseServerAxios().get(UrlConstant.api.advisor.GET_ADVISOR),
       callback,
       errorCallback
     );

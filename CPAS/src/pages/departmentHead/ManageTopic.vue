@@ -48,8 +48,6 @@
             />
           </div>
         </div>
-        <b-btn size="sm" @click="addChanelFirebase()">Add Chanel</b-btn>
-        <b-btn size="sm" @click="sendMessage()">Send Message</b-btn>
       </b-col>
     </b-row>
   </div>
@@ -62,7 +60,6 @@ import CommonUtil from '../../common/utils/common-util';
 import { TopicService } from '../../services/service-provider';
 import TableSuperVisorDetail from './components/topic-detail/TableSuperVisorDetail';
 import TopicDetailDisplayInfo from './components/topic-detail/TopicDetailDisplayInfo';
-import { firebaseObj } from '../../config/firebaseConfig';
 
 export default {
   components: {
@@ -102,8 +99,6 @@ export default {
       },
       channels: [],
       firstLoad: true,
-      channelRef: firebaseObj.database().ref('channels'),
-      messageRef: firebaseObj.database().ref('messages'),
       channel: null,
       messages: [],
       listeners: [],
@@ -116,23 +111,10 @@ export default {
       this.tableOptions.totalRows = val.length;
     }
   },
-  created() {
-    firebaseObj
-      .auth()
-      .signInWithEmailAndPassword('leman2@gmail.com', 'abc123')
-      .then(user => {
-        console.log(user);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  },
   mounted() {
     // Set the initial number of items
     this.tableOptions.totalRows = this.topics.length;
     this.loadTopics();
-    this.addListeners();
-    this.addMessagesListeners();
   },
   methods: {
     // Trigger pagination to update the number of buttons/pages due to filtering
@@ -203,96 +185,7 @@ export default {
           }
         ];
       }
-    },
-    addListeners() {
-      this.channelRef.on('child_added', snap => {
-        this.channels.push(snap.val());
-        if (this.firstLoad && this.channels.length > 0) {
-          this.channel = this.channels[0];
-        }
-        this.firstLoad = false;
-      });
-      // this.channelRef.on('value', snap => {
-      //   console.log(snap);
-      //   this.channels.push(snap.val());
-      //   if (this.firstLoad && this.channels.length > 0) {
-      //     this.channel = this.channels[0];
-      //   }
-      //   this.firstLoad = false;
-      // });
-    },
-    addMessagesListeners() {
-      // send messages by chanelID (replace userID later)
-      this.messageRef.child('-LrS558Q0WdNWQx52Uv5').on('child_added', snap => {
-        console.log('snap: ', snap);
-        const message = snap.val();
-        console.log('newmessage: ', message);
-        message.id = snap.key;
-        this.messages.push(message);
-        this.$nextTick(() => {});
-      });
-      this.addToListeners(
-        '-LrS558Q0WdNWQx52Uv5', // chanels id
-        this.messageRef,
-        'child_added'
-      );
-    },
-    addToListeners(id, ref, event) {
-      const index = this.listeners.findIndex(
-        el => el.id === id && el.ref === ref && el.event === event
-      );
-      if (index === -1) {
-        this.listeners.push({
-          id,
-          ref,
-          event
-        });
-      }
-    },
-    addChanelFirebase() {
-      // let key = this.channelRef.push().key;
-      let newChannel = { id: 4, name: 'departmenthead' };
-      this.channelRef
-        .child(4)
-        .update(newChannel)
-        .then(() => {
-          console.log('create success chanel: departmenthead');
-        })
-        .catch(err => {
-          console.log(err);
-        }); // root/channels/newchannel
-    },
-    detachListener() {
-      this.channelRef.off();
-      console.log('offf');
-    },
-    sendMessage() {
-      let newMessage = {
-        user: {
-          id: '12345',
-          name: 'KIEU TRONG KHANH',
-          role: 'DEPARTMENTHEAD'
-        },
-        content: `Waynes aaa`,
-        timestamp: firebaseObj.database.ServerValue.TIMESTAMP
-      };
-      this.messageRef
-        .child('1')
-        .push()
-        .set(newMessage)
-        .then(() => {
-          console.log('new messages added: ', newMessage);
-        })
-        .catch(err => {
-          console.log(err);
-        });
     }
-    // sendTopic(topic) {
-    //   this.selectTopic = topic;
-    // }
-  },
-  beforeDestroy() {
-    this.detachListener();
   }
 };
 </script>

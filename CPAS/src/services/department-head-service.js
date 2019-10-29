@@ -6,7 +6,7 @@ export default {
   // Send topic to committee
   sendTopicToCommittee(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.post(
+      baseServerAxios().post(
         UrlConstant.api.dh.SEND_TOPIC_TO_COMMITTEE,
         JSON.stringify(data)
       ),
@@ -17,7 +17,7 @@ export default {
   // Send topic to trainning staff
   sendTopicToTrainningStaff(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.post(
+      baseServerAxios().post(
         UrlConstant.api.dh.SEND_TOPIC_TO_TRAINING_STAFF,
         JSON.stringify(data)
       ),
@@ -28,7 +28,7 @@ export default {
   // Department head get approved topic
   getApprovedTopic(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.dh.GET_DUPLICATE_APPROVED_TOPIC),
+      baseServerAxios().get(UrlConstant.api.dh.GET_DUPLICATE_APPROVED_TOPIC),
       callback,
       errorCallback
     );
@@ -36,7 +36,7 @@ export default {
   // Department head get validation approved topic
   getValidationApprovedTopic(callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(UrlConstant.api.dh.GET_VALIDATION_APPROVED_TOPIC),
+      baseServerAxios().get(UrlConstant.api.dh.GET_VALIDATION_APPROVED_TOPIC),
       callback,
       errorCallback
     );
@@ -44,7 +44,7 @@ export default {
   // Get all question comment by topic id
   getAllQuestionCommentByTopicID(id, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(
+      baseServerAxios().get(
         UrlConstant.api.dh.GET_ALL_QUESTION_COMMENT_BY_TOPIC_ID.replace(
           '{id}',
           id
@@ -57,7 +57,7 @@ export default {
   // Department head get topic review by Id
   getTopicReviewById(id, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.get(
+      baseServerAxios().get(
         UrlConstant.api.dh.GET_TOPIC_REVIEW_BY_ID.replace('{id}', id)
       ),
       callback,
@@ -67,9 +67,27 @@ export default {
   // Post topic review
   postTopicReview(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios.post(
+      baseServerAxios().post(
         UrlConstant.api.dh.POST_TOPIC_REVIEW_STATUS,
         JSON.stringify(data)
+      ),
+      callback,
+      errorCallback
+    );
+  },
+  // get group student
+  getClassifyGroup(callback, errorCallback) {
+    CommonUtil.requestAxios(
+      baseServerAxios.get(UrlConstant.api.dh.GET_CLASSIFY_GROUP),
+      callback,
+      errorCallback
+    );
+  },
+  // disable topic
+  putDisableTopic(id, callback, errorCallback) {
+    CommonUtil.requestAxios(
+      baseServerAxios.put(
+        UrlConstant.api.dh.PUT_DISABLE_TOPIC.replace('{id}', id)
       ),
       callback,
       errorCallback

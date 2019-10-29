@@ -139,6 +139,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import moment from 'moment';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import UrlConstant from '../../common/constant/common-url';
 import CommonUtil from '../../common/utils/common-util';
@@ -148,7 +150,8 @@ import {
   AdvisorService,
   TechniqueService,
   ProgramService,
-  TopicService
+  TopicService,
+  NotiService
 } from '../../services/service-provider';
 export default {
   components: {
@@ -162,7 +165,6 @@ export default {
     return {
       advisorData: undefined,
       editor: ClassicEditor,
-      editorData: '<p>Rich-text editor content.</p>',
       editorConfig: {
         // The configuration of the rich-text editor.
       },
@@ -187,6 +189,11 @@ export default {
       }
     };
   },
+  computed: {
+    ...mapGetters({
+      userInfo: 'userInfo'
+    })
+  },
   methods: {
     // Submit form
     submitForm(status) {
@@ -202,6 +209,7 @@ export default {
               CommonConstant.NOTI_TYPE.SUCCESS
             );
             CommonUtil.removeLoading();
+            this.createNoti(convertedData);
             // Redirect
             this.redirectToTopicMngPage();
           },
@@ -224,6 +232,9 @@ export default {
               'Create topic successfull!',
               CommonConstant.NOTI_TYPE.SUCCESS
             );
+            convertedData.id = result;
+            console.log(convertedData);
+            this.createNoti(convertedData);
             // Redirect
             this.redirectToTopicMngPage();
           },
@@ -343,6 +354,26 @@ export default {
             'Server error!',
             CommonConstant.NOTI_TYPE.ERROR
           );
+        }
+      );
+    },
+    // Create notification
+    createNoti(topicData) {
+      const data = {
+        topicId: topicData.id,
+        userId: this.advisorData[0].id,
+        topicName: topicData.nameEnglish,
+        topicStatus: topicData.status,
+        userName: this.userInfo.fullName,
+        isReading: false,
+        createdDate: moment().valueOf()
+      };
+      CommonUtil.addFirebaseNotification();
+      NotiService.createNotification(
+        data,
+        () => {},
+        () => {
+          CommonUtil.removeFirebaseNotification();
         }
       );
     },

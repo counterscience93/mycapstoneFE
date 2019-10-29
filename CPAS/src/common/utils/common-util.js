@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import store from '../../store/store';
+import store from '../../store';
 
 export default {
   async requestAxios(promise, callback, errorCallBack) {
@@ -16,7 +16,7 @@ export default {
   },
   // Add loading
   addLoading() {
-    store.dispatch('setLoading', true);
+    store.dispatch('loading/setLoading', true);
   },
 
   // Convert Text html to text
@@ -63,7 +63,17 @@ export default {
 
   // Remove loading
   removeLoading() {
-    store.dispatch('setLoading', false);
+    store.dispatch('loading/setLoading', false);
+  },
+
+  // Add notification
+  addFirebaseNotification() {
+    store.dispatch('noti/setNotification', true);
+  },
+
+  // Remove notification
+  removeFirebaseNotification() {
+    store.dispatch('noti/setNotification', false);
   },
 
   showNotification(title, text, type) {
@@ -73,5 +83,32 @@ export default {
       text: text,
       type: type
     });
+  },
+  // Set cookie
+  setCookie(key, value, expiredMilli) {
+    const d = new Date();
+    d.setTime(d.getTime() + expiredMilli);
+    const expires = `expires=${d.toUTCString()}`;
+    document.cookie = `${key}=${value};${expires};path=/`;
+  },
+  // get cookies by key
+  getCookies(key) {
+    const cKey = `${key}=`;
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookieArr = decodedCookie.split(';');
+    let result = '';
+    // In case cookies is empty
+    if (cookieArr.length === 0) return '';
+    cookieArr.forEach(item => {
+      // In case key is matched
+      if (item.includes(cKey)) {
+        result = item.split('=')[1];
+      }
+    });
+    return result;
+  },
+  // Remove cookie
+  removeCookies(key) {
+    document.cookie = `${key}=; expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
   }
 };

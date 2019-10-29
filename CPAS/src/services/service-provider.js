@@ -7,6 +7,8 @@ import GroupService from './group-service';
 import StudentService from './student-service';
 import CommitteeService from './committee-service';
 import DHService from './department-head-service';
+import NotiService from './notification-service';
+import UserService from './user-service';
 
 export {
   AdvisorService,
@@ -17,5 +19,7 @@ export {
   GroupService,
   StudentService,
   DHService,
-  CommitteeService
+  CommitteeService,
+  NotiService,
+  UserService
 };

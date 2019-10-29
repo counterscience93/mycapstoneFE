@@ -1,11 +1,15 @@
 export default {
   page: {
-    DEFAULT: '/trainningStaff/published-topic',
+    DEFAULT: '/login',
+    user: {
+      LOGIN: '/login'
+    },
     advisor: {
       TOPIC_MNG: '/advisor/topic-mng',
       CREATE_TOPIC: '/advisor/create-topic/:id',
       SEARCH_TOPIC: '/advisor/search-topic',
-      TOPIC_DETAIL: '/advisor/topic-detail/:id'
+      TOPIC_DETAIL: '/advisor/topic-detail/:id',
+      GET_TOPIC: '/advisor/get-topic'
     },
     committe: {
       CM_GETLIST_TOPIC: '/committee/get-topic',
@@ -31,6 +35,10 @@ export default {
   },
   api: {
     ROOT: 'https://capstonepj.azurewebsites.net/api/',
+    // ROOT: 'http://localhost:54856/api/',
+    user: {
+      LOGIN: '/auth/login'
+    },
     technique: {
       GET_TECHNIQUE: '/technique'
     },
@@ -51,7 +59,7 @@ export default {
       GET_ADVISOR: '/advisor'
     },
     topic: {
-      GET_TOPIC: '/topic',
+      ADVISOR_GET_TOPIC: '/advisor/topic',
       GET_TOPIC_BY_ID: '/topic/{id}',
       GET_TOPIC_BY_STATUS: '/ts/topic',
       POST_TOPIC_STATUS: '/topic/status',
@@ -65,16 +73,22 @@ export default {
       GET_VALIDATION_APPROVED_TOPIC: '/dh/topic/status/validation-approved',
       GET_ALL_QUESTION_COMMENT_BY_TOPIC_ID: '/dh/topic/{id}/comment',
       GET_TOPIC_REVIEW_BY_ID: '/dh/topic/{id}/review',
-      POST_TOPIC_REVIEW_STATUS: '/dh/topic/review'
+      POST_TOPIC_REVIEW_STATUS: '/dh/topic/review',
+      GET_CLASSIFY_GROUP: 'dh/classify-group',
+      PUT_DISABLE_TOPIC: 'dh/topic/{id}/disable'
     },
     group: {
       GET_GROUP_STUDENT: '/group'
     },
     trainningStaff: {
-      CREATE_STUDENT: '/student'
+      CREATE_STUDENT: '/student',
+      GET_STUDENT: '/student'
     },
     committee: {
       GET_TOPIC: '/committee/topic/'
+    },
+    notification: {
+      CREATE_NOTI: '/notification'
     }
   }
 };

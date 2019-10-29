@@ -3,9 +3,12 @@ import CommonUtil from '../common/utils/common-util';
 import UrlConstant from '../common/constant/common-url';
 
 export default {
-  getTechnique(callback, errorCallback) {
+  createNotification(data, callback, errorCallback) {
     CommonUtil.requestAxios(
-      baseServerAxios().get(UrlConstant.api.technique.GET_TECHNIQUE),
+      baseServerAxios().post(
+        UrlConstant.api.notification.CREATE_NOTI,
+        JSON.stringify(data)
+      ),
       callback,
       errorCallback
     );
